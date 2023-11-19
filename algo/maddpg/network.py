@@ -13,6 +13,7 @@ class Critic(nn.Module):
 		
 		self.FC1 = nn.Linear(obs_dim,1024)
 		self.FC2 = nn.Linear(1024+act_dim,512)
+		# self.FC2 = nn.Linear(1024,512)
 		self.FC3 = nn.Linear(512,300)
 		self.FC4 = nn.Linear(300,1)
 		
@@ -21,6 +22,7 @@ class Critic(nn.Module):
 		result = F.relu(self.FC1(obs))
 		combined = th.cat([result, acts], dim=1)
 		result = F.relu(self.FC2(combined))
+		# result = F.relu(self.FC2(result))
 		return self.FC4(F.relu(self.FC3(result)))
 		
 class Actor(nn.Module):
@@ -36,6 +38,11 @@ class Actor(nn.Module):
 		result = F.relu(self.FC1(obs))
 		result = F.relu(self.FC2(result))
 		result = F.tanh(self.FC3(result))
+
+		result_L1 = F.relu(self.FC1(obs))
+		result_L2 = F.relu(self.FC2(result_L1))
+		result_1 = self.FC3(result_L2)
+
 		return result
 		
 	

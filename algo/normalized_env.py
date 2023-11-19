@@ -40,13 +40,14 @@ class ObsEnv(gym.ObservationWrapper):
 
 
 
-def reward_from_state(n_state):
+def reward_from_state(n_state, all_agents):
     rew = []
 
     for state in n_state:
 
         obs_landmark = np.array(state[4:10])
         agent_reward = 0
+        potential_other = []
         for i in range(3):
 
             sub_obs = obs_landmark[i*2: i*2+2]
@@ -57,8 +58,23 @@ def reward_from_state(n_state):
             if dist < 0.1: agent_reward += 1.
 
 
-        otherA = np.array(state[10:12])
-        otherB = np.array(state[12:14])
+        otherA = np.array(state[10:12])  # original
+        otherB = np.array(state[12:14])  # original
+
+
+        # ----------self added ------------------ #
+        # cur_pos = state[2:4]
+        # potential_other.append(cur_pos - all_agents[0].state.p_pos)
+        # potential_other.append(cur_pos - all_agents[1].state.p_pos)
+        # potential_other.append(cur_pos - all_agents[2].state.p_pos)
+        # idx_holder = []
+        # for items_idx, items in enumerate(potential_other):
+        #     if sum(items) == 0:
+        #         continue
+        #     idx_holder.append(items_idx)
+        # otherA = potential_other[idx_holder[0]]
+        # otherB = potential_other[idx_holder[1]]
+        # ---------- end of self added ---------- #
         dist = np.sqrt(otherA[0] ** 2 + otherA[1] ** 2)
         if dist < 3.1:  agent_reward -= 0.25
         dist = np.sqrt(otherB[0] ** 2 + otherB[1] ** 2)
